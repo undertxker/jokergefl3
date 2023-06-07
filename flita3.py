@@ -2,12 +2,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
 
-def read_adjacency_matrix(file_name):
-    with open(file_name, 'r') as f:
-        lines = f.readlines()
-        adjacency_matrix = [list(map(int, line.split())) for line in lines]
-    return nx.from_numpy_array(np.array(adjacency_matrix))
-
+#Проверка графа на связность
 def is_connected(graph):
     num_nodes = len(graph.nodes())
     num_edges = len(graph.edges())
@@ -16,20 +11,26 @@ def is_connected(graph):
     else:
         return False
 
-def plot_graph(graph):
-    pos = nx.spring_layout(graph)
-    nx.draw_networkx_nodes(graph, pos)
-    nx.draw_networkx_edges(graph, pos)
-    nx.draw_networkx_labels(graph, pos)
-    plt.show(block=True)
-    plt.pause(0.001)
+matrix = []
+#Чтение матрицы из файла
+with open('matrix.txt', 'r') as f:
+    for line in f:
+        matrix.append([int(x) for x in line.split()])
 
-file_name = "matrix.txt"
-graph = read_adjacency_matrix(file_name)
+#Создание графа из матрицы смежности
+graph = nx.from_numpy_array(np.array(matrix), create_using=nx.Graph)
+
+#Вычисление позиций вершин для отображения графа
+pos = nx.spring_layout(graph)
+
+#Отрисовка графа с помощью Matplotlib
+nx.draw(graph, pos)
+# Установка размера фигуры
+nx.draw(graph, pos, with_labels=True, node_size=500, font_size=10, font_weight='bold')
 
 if is_connected(graph):
     print("Граф связный")
 else:
     print("Граф не связный")
 
-plot_graph(graph)
+plt.show()
